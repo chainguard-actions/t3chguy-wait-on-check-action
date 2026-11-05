@@ -1,0 +1,26 @@
+name: Test basic usage on a public repo commit
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          repo: actions/checkout
+          ref: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+          repo-token: ${{ github.token }}
+          wait-interval: "5"
+          allowed-conclusions: success,skipped,failure,neutral,cancelled,timed_out,action_required,stale,startup_failure
+      - name: Assert action succeeded
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success"
+            exit 1
+          fi
+          echo "PASS"

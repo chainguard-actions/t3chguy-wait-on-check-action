@@ -1,0 +1,11 @@
+{
+  "owner": "t3chguy",
+  "repo": "wait-on-check-action",
+  "version": "18541021811b56544d90e0f073401c2b99e249d6",
+  "commit_sha": "18541021811b56544d90e0f073401c2b99e249d6",
+  "url": "https://github.com/t3chguy/wait-on-check-action",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2"
+}

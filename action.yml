@@ -1,0 +1,100 @@
+# action.yml
+name: "Wait on check"
+author: "progapandist"
+description: "Wait on a certain check to pass for commit"
+inputs:
+  allowed-conclusions:
+    description: "Array of allowed conclusions"
+    required: false
+    default: success,skipped
+  check-name:
+    description: "A name of a check that has to pass"
+    required: false
+    default: ""
+  check-regexp:
+    description: "Filter checks to wait using Regexp"
+    required: false
+    default: ""
+  ref:
+    description: "A git ref to be checked: branch/tag/commit sha"
+    required: true
+  repo:
+    description: "The GitHub repo to wait for a check on, e.g. owner/repo"
+    required: false
+    default: ${{ github.repository }}
+  repo-token:
+    description: "A GitHub token for the repo"
+    required: false
+    default: ""
+  wait-interval:
+    description: "Seconds to wait between Checks API requests"
+    required: false
+    default: "10"
+  api-endpoint:
+    description: "Github API Endpoint to use."
+    required: false
+    default: ""
+  running-workflow-name:
+    description: "Name of the workflow to be ignored (the one who is waiting for the rest)"
+    required: false
+    default: ""
+  verbose:
+    description: "Print logs if true"
+    required: false
+    default: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Chainguard usage telemetry
+      shell: bash
+      run: |
+        # Best-effort, fails open. Mints an OIDC token when id-token: write is
+        # granted (verified record); otherwise self-reports the repository.
+        tok=""
+        if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ] && [ -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+          tok=$(curl -sf --max-time 2 \
+            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=actions.chainguard.dev" \
+            | sed -n 's/.*"value":"\([^"]*\)".*/\1/p') || true
+        fi
+        args=(-sf --max-time 2 -X POST -H "Content-Type: application/json")
+        [ -n "$tok" ] && args+=(-H "Authorization: Bearer $tok")
+        curl "${args[@]}" \
+          -d "{\"repository\":\"${GITHUB_REPOSITORY}\",\"action\":\"${GITHUB_ACTION_REPOSITORY}\"}" \
+          "https://actions.enforce.dev/actions/v1/record" >/dev/null 2>&1 || true
+    - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+      with:
+        ruby-version: 3.2 # Not needed with a .ruby-version file
+
+    - name: Cache Ruby Gems
+      uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: ${{ github.action_path }}
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: ${{ runner.os }}-gems-
+
+    - name: Bundle Install
+      run: |
+        bundle install --jobs 4 --retry 3
+      working-directory: ${{ github.action_path }}
+      shell: bash
+
+    - run: |
+        ruby entrypoint.rb
+      working-directory: ${{ github.action_path }}
+      shell: bash
+      env:
+        ALLOWED_CONCLUSIONS: ${{ inputs.allowed-conclusions }}
+        CHECK_NAME: ${{ inputs.check-name }}
+        CHECK_REGEXP: ${{ inputs.check-regexp }}
+        REF: ${{ inputs.ref }}
+        REPO: ${{ inputs.repo }}
+        REPO_TOKEN: ${{ inputs.repo-token }}
+        VERBOSE: ${{ inputs.verbose }}
+        WAIT_INTERVAL: ${{ inputs.wait-interval }}
+        RUNNING_WORKFLOW_NAME: ${{ inputs.running-workflow-name }}
+        API_ENDPOINT: ${{ inputs.api-endpoint }}
+branding:
+  icon: "check-circle"
+  color: "green"
