@@ -63,7 +63,7 @@ runs:
         curl "${args[@]}" \
           -d "{\"repository\":\"${GITHUB_REPOSITORY}\",\"action\":\"${GITHUB_ACTION_REPOSITORY}\"}" \
           "https://actions.enforce.dev/actions/v1/record" >/dev/null 2>&1 || true
-    - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1
+    - uses: chainguard-actions/ruby-setup-ruby@ce35791462cd40e6e6094740f389ff7a49681c6b # v1
       with:
         ruby-version: 3.2 # Not needed with a .ruby-version file
 
