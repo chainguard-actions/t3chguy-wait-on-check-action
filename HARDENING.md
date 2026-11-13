@@ -10,18 +10,18 @@
 
 **Harden Agent Version:** `2`
 
-Action **t3chguy--wait-on-check-action/18541021811b56544d90e0f073401c2b99e249d6** was hardened automatically. 1 finding(s) were identified and resolved across 2 iteration(s).
+Action **t3chguy--wait-on-check-action/18541021811b56544d90e0f073401c2b99e249d6** was hardened automatically. 1 finding(s) were identified and resolved across 1 iteration(s).
 
 ## Findings Fixed
 
 ### unpinned-uses (severity: high)
 
-The composite action in action.yml pulls in two other actions by version tag instead of a full 40-character commit SHA: `uses: ruby/setup-ruby@v1` and `uses: actions/cache@v3`. Whoever controls those tags can change the code that runs.
+action.yml has composite-step uses: refs pinned to mutable tags instead of 40-character commit SHAs: 'uses: ruby/setup-ruby@v1' and 'uses: actions/cache@v3'.
 
 Locations:
 
-- `action.yml:48`
-- `action.yml:53`
+- `action.yml:49`
+- `action.yml:54`
 
 ## Iteration Notes
 
@@ -31,13 +31,5 @@ Locations:
 
 **Notes:**
 
-Pinned ruby/setup-ruby@v1 to de492cf36cbab201753d720ce4f4e336cd688c94 and actions/cache@v3 to 6f8efc29b200d32929f49075959781ed54ec270c in action.yml. Each pin keeps its tag in a trailing comment.
-
-### Iteration 2
-
-**Fixes applied:** unpinned-uses
-
-**Notes:**
-
-Pinned actions/cache@v3 to 6f8efc29b200d32929f49075959781ed54ec270c # v3 in action.yml.
+Pinned ruby/setup-ruby@v1 -> b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 and actions/cache@v3 -> 6f8efc29b200d32929f49075959781ed54ec270c in action.yml, keeping tag comments.
 
