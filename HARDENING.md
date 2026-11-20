@@ -16,7 +16,7 @@ Action **t3chguy--wait-on-check-action/18541021811b56544d90e0f073401c2b99e249d6*
 
 ### unpinned-uses (severity: high)
 
-action.yml has composite-step uses: refs pinned to mutable tags instead of 40-character commit SHAs: 'uses: ruby/setup-ruby@v1' and 'uses: actions/cache@v3'.
+action.yml has composite steps that reference actions by a mutable tag instead of a full 40-character commit SHA: 'uses: ruby/setup-ruby@v1' and 'uses: actions/cache@v3'. Pin both to commit SHAs.
 
 Locations:
 
@@ -31,5 +31,5 @@ Locations:
 
 **Notes:**
 
-Pinned ruby/setup-ruby@v1 -> b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 and actions/cache@v3 -> 6f8efc29b200d32929f49075959781ed54ec270c in action.yml, keeping tag comments.
+Pinned ruby/setup-ruby@v1 to f9c4492e86def3e644ab32a0ef185eda5b0c20d0 and actions/cache@v3 to 6f8efc29b200d32929f49075959781ed54ec270c in action.yml, with tag comments.
 
